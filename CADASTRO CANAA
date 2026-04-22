@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Canaã — Ficha de Atendimento</title>
+  <style>
+    :root {
+      --charcoal: #2e3338;
+      --gold: #c9a84c;
+      --gold-light: #e2c97e;
+      --cream: #f0ece4;
+      --muted: #8a9099;
+      --border: rgba(201,168,76,0.25);
+      --border-faint: rgba(201,168,76,0.12);
+      --danger: #e24b4a;
+      --danger-bg: rgba(226,75,74,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--charcoal);
+      min-height: 100vh;
+      padding: 2rem 1.25rem;
+      color: var(--cream);
+    }
+    .wrap { max-width: 640px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.75rem; border-bottom: 1px solid var(--border); }
+    .brand-name { font-family: Georgia, serif; font-size: 2.2rem; font-weight: 300; letter-spacing: 0.2em; color: var(--cream); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .brand-tag { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); }
+    .brand-tag::before, .brand-tag::after { content: ''; display: block; width: 28px; height: 1px; background: var(--gold); opacity: 0.6; }
+    .doc-title { margin-top: 1.25rem; font-family: Georgia, serif; font-style: italic; font-size: 1rem; color: var(--muted); }
+    .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-faint); border-radius: 3px; padding: 1.75rem 1.5rem; margin-bottom: 1rem; }
+    .sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+    .sec-num { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 0.62rem; color: var(--gold); flex-shrink: 0; }
+    .sec-title { font-family: Georgia, serif; font-size: 0.9rem; color: var(--cream); letter-spacing: 0.14em; text-transform: uppercase; }
+    .sec-line { flex: 1; height: 1px; background: var(--border-faint); }
+    .row { display: grid; gap: 1rem; margin-bottom: 1rem; }
+    .row.two { grid-template-columns: 1fr 1fr; }
+    .row.one { grid-template-columns: 1fr; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .lbl { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+    .lbl small { color: var(--muted); font-weight: 300; letter-spacing: 0.06em; text-transform: none; font-size: 0.58rem; }
+    input.f, select.f, textarea.f { font-family: inherit; font-size: 0.875rem; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.18); border-radius: 2px; color: var(--cream); width: 100%; outline: none; transition: border-color 0.2s; }
+    input.f::placeholder, textarea.f::placeholder { color: rgba(138,144,153,0.45); }
+    input.f:focus, select.f:focus, textarea.f:focus { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+    select.f { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9a84c' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+    select.f option { background: #2e3338; color: #f0ece4; }
+    textarea.f { resize: vertical; min-height: 75px; }
+    .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 0.5rem; }
+    .btn-sec { font-family: inherit; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 10px 20px; background: transparent; border: 1px solid rgba(201,168,76,0.3); border-radius: 2px; color: var(--muted); cursor: pointer; }
+    .btn-pri { font-family: inherit; font-size: 0.68rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; padding: 10px 28px; background: var(--gold); border: 1px solid var(--gold); border-radius: 2px; color: #2e3338; cursor: pointer; }
+    .btn-pri:disabled { opacity: 0.35; cursor: not-allowed; }
+    .success { display: none; text-align: center; padding: 3rem 1.5rem; }
+    .success-circle { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+    .success-title { font-family: Georgia, serif; font-size: 1.5rem; font-weight: 300; color: var(--cream); margin-bottom: 0.4rem; }
+    .success-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.75rem; line-height: 1.6; }
+    .footer { text-align: center; margin-top: 1.75rem; font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(138,144,153,0.35); }
+    /* Políticas */
+    #politicas { display: block; }
+    .intro-text { font-size: 0.8rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.5rem; text-align: center; }
+    .politica-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border-faint); border-radius: 3px; padding: 1.25rem 1.25rem 1.25rem 1rem; margin-bottom: 0.75rem; transition: border-color 0.2s; }
+    .politica-item.respondida-sim { border-color: rgba(201,168,76,0.45); }
+    .politica-item.respondida-nao { border-color: rgba(226,75,74,0.4); background: var(--danger-bg); }
+    .politica-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1rem; }
+    .politica-icon { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .politica-texto { flex: 1; }
+    .politica-titulo { font-family: Georgia, serif; font-size: 0.85rem; color: var(--cream); margin-bottom: 0.3rem; }
+    .politica-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.55; }
+    .politica-btns { display: flex; gap: 8px; }
+    .btn-pol { font-family: inherit; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; padding: 8px 20px; border-radius: 2px; cursor: pointer; border: 1px solid rgba(201,168,76,0.28); background: transparent; color: var(--muted); transition: all 0.15s; flex: 1; text-align: center; }
+    .btn-pol:hover { border-color: var(--gold); color: var(--cream); }
+    .btn-pol.ativo-sim { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold-light); }
+    .btn-pol.ativo-nao { background: rgba(226,75,74,0.1); border-color: var(--danger); color: #f09595; }
+    .alerta-nao { display: none; margin-top: 0.75rem; font-size: 0.68rem; color: #f09595; line-height: 1.5; padding: 0.65rem 0.85rem; border-left: 2px solid var(--danger); background: rgba(226,75,74,0.06); }
+    .alerta-nao.visivel { display: block; }
+    .progresso-bar { height: 2px; background: var(--border-faint); border-radius: 1px; margin-bottom: 1.5rem; overflow: hidden; }
+    .progresso-fill { height: 100%; background: var(--gold); border-radius: 1px; transition: width 0.3s ease; width: 0%; }
+    .politicas-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem; flex-wrap: wrap; gap: 10px; }
+    .politicas-status { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .politicas-status span { color: var(--gold); }
+    /* Toast de envio */
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1a1e21; border: 1px solid var(--border); border-radius: 3px; padding: 0.75rem 1.25rem; font-size: 0.72rem; color: var(--cream); display: none; z-index: 999; white-space: nowrap; }
+    .toast.vis { display: block; }
+
+    @media (max-width: 480px) {
+      .row.two { grid-template-columns: 1fr; }
+      .card { padding: 1.25rem 1rem; }
+      .brand-name { font-size: 1.8rem; }
+      .actions { flex-direction: column-reverse; }
+      .btn-pri, .btn-sec { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <svg width="60" height="52" viewBox="0 0 60 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 1.25rem;">
+      <line x1="8"  y1="4" x2="8"  y2="32" stroke="#f0ece4" stroke-width="2"/>
+      <line x1="13" y1="4" x2="13" y2="32" stroke="#f0ece4" stroke-width="2"/>
+      <line x1="18" y1="4" x2="18" y2="32" stroke="#f0ece4" stroke-width="2"/>
+      <line x1="23" y1="4" x2="23" y2="32" stroke="#f0ece4" stroke-width="2"/>
+      <rect x="23" y="4" width="22" height="28" stroke="#f0ece4" stroke-width="1.8" fill="none"/>
+      <line x1="34" y1="4" x2="34" y2="32" stroke="#f0ece4" stroke-width="1.4"/>
+      <line x1="23" y1="18" x2="45" y2="18" stroke="#f0ece4" stroke-width="1.4"/>
+      <path d="M4 34 L30 42 L56 34" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div class="brand-name">Canaã</div>
+    <div class="brand-tag">Assessoria &amp; Design de Ambiente</div>
+    <div class="doc-title">Ficha de atendimento ao cliente</div>
+  </div>
+
+
+
+  <!-- TELA 1: POLÍTICAS -->
+  <div id="politicas">
+    <div class="card">
+      <div class="sec-head">
+        <div class="sec-num">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#c9a84c" stroke-width="1"/><line x1="5" y1="3" x2="5" y2="5.5" stroke="#c9a84c" stroke-width="1" stroke-linecap="round"/><circle cx="5" cy="7" r="0.5" fill="#c9a84c"/></svg>
+        </div>
+        <div class="sec-title">Confirmação de políticas</div>
+        <div class="sec-line"></div>
+      </div>
+      <p class="intro-text">Antes de iniciar o cadastro, confirme com o cliente as informações abaixo. Responda <em>Sim</em> ou <em>Não</em> para cada item.</p>
+      <div class="progresso-bar"><div class="progresso-fill" id="progressoFill"></div></div>
+
+      <div class="politica-item" id="pol-0">
+        <div class="politica-top">
+          <div class="politica-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="9" rx="1" stroke="#c9a84c" stroke-width="1.1"/><line x1="1" y1="5" x2="12" y2="5" stroke="#c9a84c" stroke-width="1.1"/><line x1="4" y1="8" x2="9" y2="8" stroke="#c9a84c" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+          <div class="politica-texto">
+            <div class="politica-titulo">Agendamento com visita técnica</div>
+            <div class="politica-desc">O cliente está ciente de que o projeto só é iniciado após a visita técnica presencial ao imóvel, sem exceções?</div>
+          </div>
+        </div>
+        <div class="politica-btns">
+          <button class="btn-pol" onclick="responder(0, true)">Sim</button>
+          <button class="btn-pol" onclick="responder(0, false)">Não</button>
+        </div>
+        <div class="alerta-nao" id="alerta-0">Esclareça ao cliente que a visita técnica é obrigatória e reagende para quando ele estiver de acordo.</div>
+      </div>
+
+      <div class="politica-item" id="pol-1">
+        <div class="politica-top">
+          <div class="politica-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#c9a84c" stroke-width="1.1"/><line x1="6.5" y1="3.5" x2="6.5" y2="7" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round"/><circle cx="6.5" cy="9" r="0.6" fill="#c9a84c"/></svg></div>
+          <div class="politica-texto">
+            <div class="politica-titulo">Prazo de execução</div>
+            <div class="politica-desc">O cliente foi informado que os prazos de entrega dependem da disponibilidade de fornecedores e do escopo do projeto, podendo variar?</div>
+          </div>
+        </div>
+        <div class="politica-btns">
+          <button class="btn-pol" onclick="responder(1, true)">Sim</button>
+          <button class="btn-pol" onclick="responder(1, false)">Não</button>
+        </div>
+        <div class="alerta-nao" id="alerta-1">Informe ao cliente sobre a variabilidade dos prazos antes de prosseguir com o cadastro.</div>
+      </div>
+
+      <div class="politica-item" id="pol-2">
+        <div class="politica-top">
+          <div class="politica-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 10 L6.5 2 L11 10 Z" stroke="#c9a84c" stroke-width="1.1" fill="none" stroke-linejoin="round"/><line x1="6.5" y1="6" x2="6.5" y2="8" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round"/><circle cx="6.5" cy="9.2" r="0.5" fill="#c9a84c"/></svg></div>
+          <div class="politica-texto">
+            <div class="politica-titulo">Pagamento e sinal</div>
+            <div class="politica-desc">O cliente compreendeu que é necessário o pagamento de um sinal para início dos serviços, conforme proposta apresentada?</div>
+          </div>
+        </div>
+        <div class="politica-btns">
+          <button class="btn-pol" onclick="responder(2, true)">Sim</button>
+          <button class="btn-pol" onclick="responder(2, false)">Não</button>
+        </div>
+        <div class="alerta-nao" id="alerta-2">Apresente a política de pagamento ao cliente antes de registrar o atendimento.</div>
+      </div>
+
+      <div class="politica-item" id="pol-3">
+        <div class="politica-top">
+          <div class="politica-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4.5 C2 4.5 3.5 2 6.5 2 C9.5 2 11 4.5 11 4.5" stroke="#c9a84c" stroke-width="1.1" fill="none" stroke-linecap="round"/><rect x="1.5" y="4.5" width="10" height="6.5" rx="1" stroke="#c9a84c" stroke-width="1.1" fill="none"/><circle cx="6.5" cy="7.5" r="1.2" stroke="#c9a84c" stroke-width="1"/></svg></div>
+          <div class="politica-texto">
+            <div class="politica-titulo">Uso de imagem e divulgação</div>
+            <div class="politica-desc">O cliente autoriza o uso de fotos do ambiente concluído para divulgação nos canais da Canaã (Instagram, portfólio, etc.)?</div>
+          </div>
+        </div>
+        <div class="politica-btns">
+          <button class="btn-pol" onclick="responder(3, true)">Sim</button>
+          <button class="btn-pol" onclick="responder(3, false)">Não</button>
+        </div>
+        <div class="alerta-nao" id="alerta-3">Registre a recusa. As fotos deste cliente não deverão ser publicadas. Anote nas observações do cadastro.</div>
+      </div>
+
+      <div class="politicas-footer">
+        <div class="politicas-status">Respondidas: <span id="qtdRespondidas">0</span> de 4</div>
+        <button class="btn-pri" id="btnAvancar" onclick="avancar()" disabled>Avançar para o cadastro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 2: FORMULÁRIO -->
+  <div id="main" style="display:none;">
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">1</div><div class="sec-title">Dados do cliente</div><div class="sec-line"></div></div>
+      <div class="row one"><div class="field"><label class="lbl">Nome completo</label><input class="f" type="text" id="nome" placeholder="Nome do cliente"/></div></div>
+      <div class="row two">
+        <div class="field"><label class="lbl">WhatsApp</label><input class="f" type="tel" id="whatsapp" placeholder="(00) 90000-0000"/></div>
+        <div class="field"><label class="lbl">Telefone <small>(opcional)</small></label><input class="f" type="tel" id="telefone" placeholder="(00) 0000-0000"/></div>
+      </div>
+      <div class="row one"><div class="field"><label class="lbl">E-mail <small>(opcional)</small></label><input class="f" type="email" id="email" placeholder="email@exemplo.com"/></div></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">2</div><div class="sec-title">Endereço do imóvel</div><div class="sec-line"></div></div>
+      <div class="row one"><div class="field"><label class="lbl">Rua / Avenida</label><input class="f" type="text" id="rua" placeholder="Ex: Rua das Flores, 120"/></div></div>
+      <div class="row two">
+        <div class="field"><label class="lbl">Bairro</label><input class="f" type="text" id="bairro" placeholder="Ex: Jardim América"/></div>
+        <div class="field"><label class="lbl">Cidade</label><input class="f" type="text" id="cidade" placeholder="Ex: Goiânia"/></div>
+      </div>
+      <div class="row two">
+        <div class="field"><label class="lbl">Complemento <small>(opcional)</small></label><input class="f" type="text" id="complemento" placeholder="Apto, bloco..."/></div>
+        <div class="field"><label class="lbl">Tipo de imóvel</label>
+          <select class="f" id="tipo">
+            <option value="">Selecionar...</option>
+            <option>Apartamento</option><option>Casa</option><option>Condomínio fechado</option><option>Comercial</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">3</div><div class="sec-title">Informações do projeto</div><div class="sec-line"></div></div>
+      <div class="row one"><div class="field"><label class="lbl">Ambiente(s) de interesse</label>
+        <select class="f" id="ambiente">
+          <option value="">Selecionar...</option>
+          <option>Cozinha</option><option>Quarto / Closet</option><option>Sala</option><option>Banheiro</option><option>Escritório / Home office</option><option>Múltiplos ambientes</option>
+        </select>
+      </div></div>
+      <div class="row one"><div class="field"><label class="lbl">Como nos conheceu?</label>
+        <select class="f" id="origem">
+          <option value="">Selecionar...</option>
+          <option>Indicação de cliente</option><option>Instagram / Redes sociais</option><option>Google</option><option>Fachada / Localização</option><option>Outro</option>
+        </select>
+      </div></div>
+      <div class="row one"><div class="field"><label class="lbl">Observações <small>(estilo, referências, situação do imóvel...)</small></label>
+        <textarea class="f" id="obs" placeholder="Anote aqui tudo que o cliente mencionou..."></textarea>
+      </div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-sec" onclick="limpar()">Limpar ficha</button>
+      <button class="btn-pri" id="btnSalvar" onclick="salvar()">Registrar atendimento</button>
+    </div>
+  </div>
+
+  <!-- TELA 3: SUCESSO -->
+  <div class="success" id="ok">
+    <div class="success-circle">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polyline points="3,10 8,15 17,5" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="success-title">Cadastro registrado!</div>
+    <div class="success-sub">Dados enviados para o e-mail e planilha da Canaã.<br>Próximo passo: agendar a visita técnica.</div>
+    <button class="btn-pri" onclick="novo()">Novo atendimento</button>
+  </div>
+
+  <div class="footer">Canaã Assessoria &amp; Design de Ambiente &nbsp;·&nbsp; Uso interno</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── URL fixa do Apps Script ──────────────────────────────────
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGVivIv_ZHgBG_ARc5VQBgQ-gldjRTgbDhWkmt80tRMeoi34a_kF-f8qVcUz8DBo7K/exec';
+
+function getScriptUrl() {
+  return SCRIPT_URL;
+}
+
+// ── Políticas ────────────────────────────────────────────────
+var respostas = [null, null, null, null];
+
+function responder(idx, valor) {
+  respostas[idx] = valor;
+  var item   = document.getElementById('pol-' + idx);
+  var alerta = document.getElementById('alerta-' + idx);
+  var btns   = item.querySelectorAll('.btn-pol');
+  item.className = 'politica-item ' + (valor ? 'respondida-sim' : 'respondida-nao');
+  btns[0].className = 'btn-pol' + (valor  ? ' ativo-sim' : '');
+  btns[1].className = 'btn-pol' + (!valor ? ' ativo-nao' : '');
+  if (alerta) alerta.className = 'alerta-nao' + (!valor ? ' visivel' : '');
+  atualizarProgresso();
+}
+
+function atualizarProgresso() {
+  var resp = respostas.filter(function(r){ return r !== null; }).length;
+  document.getElementById('qtdRespondidas').textContent = resp;
+  document.getElementById('progressoFill').style.width = (resp / 4 * 100) + '%';
+  document.getElementById('btnAvancar').disabled = resp !== 4;
+}
+
+function avancar() {
+  window._obsExtra = !respostas[3] ? '[NÃO autoriza uso de imagem para divulgação]' : '';
+  document.getElementById('politicas').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+}
+
+// ── Formulário ───────────────────────────────────────────────
+function g(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+function salvar() {
+  var nome = g('nome');
+  var wpp  = g('whatsapp');
+  if (!nome || !wpp) { alert('Preencha ao menos o nome e o WhatsApp do cliente.'); return; }
+
+  var url = getScriptUrl();
+
+  var obsBase  = g('obs');
+  var obsFinal = window._obsExtra
+    ? (obsBase ? obsBase + '\n' + window._obsExtra : window._obsExtra)
+    : (obsBase || '');
+
+  var dados = {
+    nome:        nome,
+    whatsapp:    wpp,
+    telefone:    g('telefone'),
+    email:       g('email'),
+    rua:         g('rua'),
+    bairro:      g('bairro'),
+    cidade:      g('cidade'),
+    complemento: g('complemento'),
+    tipo:        g('tipo'),
+    ambiente:    g('ambiente'),
+    origem:      g('origem'),
+    obs:         obsFinal,
+    pol_visita:  respostas[0] ? 'Sim' : 'Não',
+    pol_prazo:   respostas[1] ? 'Sim' : 'Não',
+    pol_pgto:    respostas[2] ? 'Sim' : 'Não',
+    pol_imagem:  respostas[3] ? 'Sim' : 'Não'
+  };
+
+  var btn = document.getElementById('btnSalvar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  mostrarToast('Enviando cadastro...');
+
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(dados)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(resp){
+    if (resp.ok) {
+      document.getElementById('main').style.display = 'none';
+      document.getElementById('ok').style.display = 'block';
+      mostrarToast('✔ Enviado com sucesso!');
+    } else {
+      alert('Erro ao enviar: ' + resp.msg);
+      btn.disabled = false;
+      btn.textContent = 'Registrar atendimento';
+    }
+  })
+  .catch(function(err){
+    alert('Falha na conexão. Verifique a URL do script e tente novamente.');
+    btn.disabled = false;
+    btn.textContent = 'Registrar atendimento';
+  });
+}
+
+function mostrarToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast vis';
+  setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+
+function limpar() {
+  document.querySelectorAll('input,select,textarea').forEach(function(el){ el.value = ''; });
+}
+
+function novo() {
+  limpar();
+  respostas = [null, null, null, null];
+  window._obsExtra = '';
+  for (var i = 0; i < 4; i++) {
+    document.getElementById('pol-' + i).className = 'politica-item';
+    var al = document.getElementById('alerta-' + i);
+    if (al) al.className = 'alerta-nao';
+    document.getElementById('pol-' + i).querySelectorAll('.btn-pol').forEach(function(b){ b.className = 'btn-pol'; });
+  }
+  document.getElementById('qtdRespondidas').textContent = '0';
+  document.getElementById('progressoFill').style.width = '0%';
+  document.getElementById('btnAvancar').disabled = true;
+  document.getElementById('btnSalvar').disabled = false;
+  document.getElementById('btnSalvar').textContent = 'Registrar atendimento';
+  document.getElementById('ok').style.display = 'none';
+  document.getElementById('politicas').style.display = 'block';
+}
+</script>
+</body>
+</html>
